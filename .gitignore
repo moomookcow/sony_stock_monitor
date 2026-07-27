@@ -1,0 +1,21 @@
+# Node dependencies
+node_modules/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# dotenv environment variables
+.env
+.env.local
+.env.*.local
+
+# local state
+state.json
+
+# Optional npm cache directory
+.npm
+
+# OS files
+.DS_Store
