@@ -58,7 +58,9 @@ async function runCheck(options = {}) {
 
 // Google Cloud Function HTTP wrapper
 exports.checkSonyStock = async (req, res) => {
-  const force = (req.query && req.query.force === "1") || (req.body && req.body.force === true);
+  const force =
+    (req.query && req.query.force === "1") ||
+    (req.body && req.body.force === true);
   try {
     const result = await runCheck({ force });
     res.status(200).json({ ok: true, result });
