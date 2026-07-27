@@ -2,8 +2,8 @@
 
 우선순위에 따라 진행할 작업들입니다. 현재 1번 작업을 진행 중입니다.
 
-- [ ] 1. Add GCF HTTP wrapper (in-progress)
-- [ ] 2. Implement ClientId expiry detection
+- [x] 1. Add GCF HTTP wrapper (completed)
+- [ ] 2. Implement ClientId expiry detection (in-progress)
 - [ ] 3. Add Telegram error + manual ClientId flow
 - [ ] 4. Replace state.json with Cloud storage (Cloud Storage / Firestore)
 - [ ] 5. Move secrets to Secret Manager (GCP Secret Manager)

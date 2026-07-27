@@ -4,10 +4,11 @@ const notifier = require("./telegramNotifier");
 const stateStore = require("./stateStore");
 const config = require("./config");
 
-async function runCheck() {
+async function runCheck(options = {}) {
   const previousState = stateStore.loadState();
   const isInitialRun = Object.keys(previousState).length === 0;
   const forceNotifyOnManual = process.env.FORCE_NOTIFY_ON_MANUAL === "true";
+  const forceOption = !!options.force;
   const newState = {};
 
   for (const productNo of config.products.targetIds) {
@@ -24,7 +25,7 @@ async function runCheck() {
       };
 
       const previous = previousState[productNo] || { available: false };
-      const isManualNotification = forceNotifyOnManual;
+      const isManualNotification = forceNotifyOnManual || forceOption;
       const shouldNotify =
         isManualNotification ||
         (availability.isAvailable && (isInitialRun || !previous.available));
@@ -52,8 +53,25 @@ async function runCheck() {
   }
 
   stateStore.saveState(newState);
+  return newState;
 }
 
-runCheck().catch((error) => {
-  console.error("Fatal error:", error.message);
-});
+// Google Cloud Function HTTP wrapper
+exports.checkSonyStock = async (req, res) => {
+  const force = (req.query && req.query.force === "1") || (req.body && req.body.force === true);
+  try {
+    const result = await runCheck({ force });
+    res.status(200).json({ ok: true, result });
+  } catch (err) {
+    console.error("checkSonyStock error:", err);
+    res.status(500).json({ ok: false, error: err.message });
+  }
+};
+
+// Preserve CLI/local behavior when run directly
+if (require.main === module) {
+  runCheck().catch((error) => {
+    console.error("Fatal error:", error.message);
+    process.exit(1);
+  });
+}
