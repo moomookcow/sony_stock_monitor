@@ -48,6 +48,19 @@ async function runCheck(options = {}) {
         console.log(`No alert for ${productNo}: ${availability.reason}`);
       }
     } catch (error) {
+      // ClientId 만료 감지 및 Telegram 알림
+      if (error instanceof productApi.ClientIdExpiredError) {
+        console.error(`[CRITICAL] ClientId 만료됨:`, error.message);
+        const errorMessage =
+          `⚠️ ClientId 만료됨\n\n` +
+          `API 호출 시 ClientId가 만료되었거나 무효합니다.\n` +
+          `새 ClientId를 채팅으로 보내주세요.\n\n` +
+          `에러: ${error.message}`;
+        await notifier.sendMessage(errorMessage);
+        // 모든 상품 체크 중단
+        throw error;
+      }
+
       console.error(`Error checking product ${productNo}:`, error.message);
     }
   }
